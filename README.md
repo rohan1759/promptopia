@@ -36,10 +36,11 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 
-Point to Remember:
+## Point to Remember
 
-In component folder their is two file (1). Provider.jsx and 
-                                      (2). SessionProvider.jsx
+In component folder their is two file 
+- Provider.jsx
+- SessionProvider.jsx
 
 as we know, to get the session data from the server or the client-side, we need to wrap the rootFile into the SessionProvider (Top Level Component) component.
 
