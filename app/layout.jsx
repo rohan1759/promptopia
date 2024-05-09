@@ -5,7 +5,7 @@ import SessionProvider from '@components/SessionProvider';
 import Provider from '@components/Provider';
 import { getServerSession } from 'next-auth';
 
-export const metaData = {
+const metaData = {
     title: 'Promptopia',
     description: 'Discover & Share AI Prompts',
     };
