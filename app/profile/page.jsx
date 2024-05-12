@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 import Profile from '@components/Profile'
-
+import IsAuth from "@components/IsAuth";
 
 const MyProfile = () => {
 
@@ -44,18 +44,28 @@ const MyProfile = () => {
         }
         if(session?.user.id)
             fetchPosts();
-      }, [])
+      }, [userId, session?.user.id])
 
+      if (!posts) {
+        return <div>Loading...</div>; // Show loading state while data is being fetched
+    }   
 
     return (
-        <Profile
-            name={userId ? `` : "My"}
-            desc="Welcome to your personalized profile page"
-            data={posts}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-        />
+
+            <Profile
+                name={userId ? `` : "My"}
+                desc={userId ? `Welcome to user profile`: `Welcome to your personalized profile page`}
+                data={posts}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                />
     )
 }
 
-export default MyProfile
+const ProfilePage = () => (
+    <Suspense fallback={<div>Loading...</div>}> {/* Wrap MyProfile component with Suspense */}
+        <MyProfile />
+    </Suspense>
+);
+
+export default IsAuth(ProfilePage)

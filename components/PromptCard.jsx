@@ -3,7 +3,7 @@
 import { useState,  } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useRouter, usePathname} from 'next/navigation'
+import { useRouter, usePathname, redirect} from 'next/navigation'
 
 const PromptCard = ({ post, handleTagClick, handleDelete, handleEdit }) => {
 
@@ -19,7 +19,14 @@ const PromptCard = ({ post, handleTagClick, handleDelete, handleEdit }) => {
   }
 
   const handleProfileRoute = (id) => {
-    router.push(`/profile?id=${id}`)
+    if(session){
+      if(session.user.id === id){
+        router.push(`/profile`)
+      }
+      else{
+        router.push(`/profile?id=${id}`)
+      }
+    }
   }
 
   return (

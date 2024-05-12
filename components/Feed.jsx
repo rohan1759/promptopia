@@ -1,21 +1,19 @@
-"use client";
+"use client"
 
-import PromptCard from '@components/PromptCard'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import PromptCard from '@components/PromptCard';
 
 const Feed = () => {
-
-  const [searchText, setSearchText] = useState('')
-  const [allPosts, setAllPosts] = useState([])
-  const [filteredPosts, setFilteredPosts] = useState([])
+  const [searchText, setSearchText] = useState('');
+  const [allPosts, setAllPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [loading, setLoading] = useState(true); // State for loading indicator
 
   const handleSearchChange = (e) => {
     const value = e.target ? e.target.value : e.detail.tag.toLowerCase();
     setSearchText(value.toLowerCase());
 
-    // Filter posts based on search text
     const filtered = allPosts.filter(post => {
-      // Check if post tags or username match the search text
       return post.tag.toLowerCase().includes(value.replace(" ", "")) || post.creator.username.toLowerCase().includes(value.replace(" ", ""));
     });
 
@@ -23,31 +21,39 @@ const Feed = () => {
   }
 
   const handleTagClick = (tagvalue) => {
-    const event = new CustomEvent('tagClicked', { detail: { tag: tagvalue } })
-    handleSearchChange(event)
+    const event = new CustomEvent('tagClicked', { detail: { tag: tagvalue } });
+    handleSearchChange(event);
   }
   
   const PromptCardList = ({ data, handleTagClick }) => {
     return (
       <div className='mt-16 prompt_layout'>
-          {data.map((post) => (
-            <PromptCard
-              key={post._id}
-              post={post}
-              handleTagClick={handleTagClick}
-            />
-          ))}
+        {data.map((post) => (
+          <PromptCard
+            key={post._id}
+            post={post}
+            handleTagClick={handleTagClick}
+          />
+        ))}
       </div>
     )
   }
 
   useEffect(() => {
-    (async () => {
-      const response = await fetch("api/prompt")
-      const data = await response.json()
-      setAllPosts(data)
-    })()
-  }, [])
+    const fetchData = async () => {
+      try {
+        const response = await fetch("api/prompt");
+        const data = await response.json();
+        setAllPosts(data);
+        setLoading(false); // Set loading to false after fetching data
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false); // Set loading to false in case of error
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <section className='feed'>
@@ -63,13 +69,17 @@ const Feed = () => {
         />
       </form>
 
-      <PromptCardList
-        data={searchText ? filteredPosts : allPosts}
-        handleTagClick={handleTagClick}
-      />
+      {loading ? (
+        <p className='feed'>Loading...</p> // Render loading indicator while fetching data
+      ) : (
+        <PromptCardList
+          data={searchText ? filteredPosts : allPosts}
+          handleTagClick={handleTagClick}
+        />
+      )}
 
     </section>
   )
 }
 
-export default Feed
+export default Feed;
